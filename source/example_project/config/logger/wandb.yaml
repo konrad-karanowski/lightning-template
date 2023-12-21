@@ -9,7 +9,7 @@ wandb:
   entity: 'konrad-karanowski'
   log_model: False
   mode: 'online'
-  save_dir: ${paths.storage_dir}
+  save_dir: ${paths.run_dir}
 
   project: ${core.project_name} 
   tags: ${core.tags} # tags should be in the most "out" project

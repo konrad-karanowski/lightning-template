@@ -5,6 +5,11 @@
 defaults:
 
   # ===================================================================================
+  # OVERRIDE
+  # ===================================================================================
+  - _self_
+
+  # ===================================================================================
   # CORE - core things for the project such as paths, hydra behaviour, logger etc
   # ===================================================================================
   - core: default
@@ -46,16 +51,16 @@ defaults:
   - optional local: default
   # debugging config (enable through command line, e.g. `python train.py debug=default)
   - debug: null
-  # for checkpoint, if we want to reasume the training
-  - checkpoint_path: null
 
-  # ===================================================================================
-  # OVERRIDE
-  # ===================================================================================
-  - _self_
+# task name, determines output directory path
+task_name: "train"
 
-# # task name, determines output directory path
-# task_name: "train"
+# for checkpoint, if we want to reasume the training
+checkpoint_path: null
+
+# if we want to train and/or test
+train : true
+test: true
 
 # # tags to help you identify your experiments
 # # you can overwrite this in experiment configs

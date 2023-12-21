@@ -7,6 +7,3 @@ version: 1.0
 
 # seed for easy reproducebility
 seed:  2137
-
-# task name
-task_name: "train"

@@ -49,7 +49,7 @@ def log_hyperparameters(object_dict: Dict[str, Any]) -> None:
 
     hparams["task_name"] = config.get("task_name")
     hparams["tags"] = config.get("core").get("tags")
-    hparams["ckpt_path"] = config.get("ckpt_path")
+    hparams["checkpoint_path"] = config.get("paths").get("checkpoint_path")
     hparams["seed"] = config.get("seed")
 
     # send hparams to all loggers

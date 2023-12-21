@@ -70,7 +70,7 @@ def print_config_tree(
 
     # save config tree to file
     if save_to_file:
-        with open(Path(config.paths.hydra_output_dir, "config_tree.log"), "w") as file:
+        with open(Path(config.paths.run_dir, "config_tree.log"), "w") as file:
             rich.print(tree, file=file)
 
 
@@ -95,5 +95,5 @@ def enforce_tags(config: DictConfig, save_to_file: bool = False) -> None:
         log.info(f"Tags: {config.tags}")
 
     if save_to_file:
-        with open(Path(config.paths.hydra_output_dir, "tags.log"), "w") as file:
+        with open(Path(config.paths.run_dir, "tags.log"), "w") as file:
             rich.print(config.core.tags, file=file)
