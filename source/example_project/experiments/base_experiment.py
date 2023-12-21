@@ -22,8 +22,11 @@ def train(config: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     This method is wrapped in optional @task_wrapper decorator, that controls the behavior during
     failure. Useful for multiruns, saving info about the crash, etc.
 
-    :param config: A DictConfig configuration composed by Hydra.
-    :return: A tuple with metrics and dict with all instantiated objects.
+    Args:
+        config (DictConfig): A DictConfig configuration composed by Hydra.
+
+    Returns:
+        Tuple[Dict[str, Any], Dict[str, Any]]: A tuple with metrics and dict with all instantiated objects.
     """
     # set seed for random number generators in pytorch, numpy and python.random
     if config.get("seed"):
@@ -83,8 +86,11 @@ def train(config: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 def main(config: DictConfig) -> Optional[float]:
     """Main entry point for training.
 
-    :param config: DictConfig configuration composed by Hydra.
-    :return: Optional[float] with optimized metric value.
+    Args:
+        config: DictConfig configuration composed by Hydra.
+
+    Returns:
+        Optional[float]: Optimized metric value.
     """
     # apply extra utilities
     # (e.g. ask for tags if none are provided in config, print config tree, etc.)

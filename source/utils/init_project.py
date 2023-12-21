@@ -26,7 +26,7 @@ def _make_dirs(dirs: List[str]) -> None:
 
 
 def init_project(root: str) -> None:
-    """Inits the project environmental variables. This is the best idea that we know.
+    """Inits the project environmental variables. This is later used by Hydra.
 
     Args:
         root (str): Name of the calling module.

@@ -19,8 +19,11 @@ def evaluate(config: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     This method is wrapped in optional @task_wrapper decorator, that controls the behavior during
     failure. Useful for multiruns, saving info about the crash, etc.
 
-    :param config: DictConfig configuration composed by Hydra.
-    :return: Tuple[dict, dict] with metrics and dict with all instantiated objects.
+    Args:
+        config (DictConfig): DictConfig configuration composed by Hydra.
+
+    Returns:
+        Tuple[Dict[str, Any], Dict[str, Any]]: Tuple with metrics and dict with all instantiated objects.
     """
     assert config.checkpoint_path
 
@@ -61,9 +64,10 @@ def evaluate(config: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 
 @hydra.main(config_path=os.environ["CONFIG_DIR"], config_name="evaluate")
 def main(config: DictConfig) -> None:
-    """Main entry point for evaluation.
+    """Main entry point for training.
 
-    :param config: DictConfig configuration composed by Hydra.
+    Args:
+        config: DictConfig configuration composed by Hydra.
     """
     # apply extra utilities
     # (e.g. ask for tags if none are provided in config, print config tree, etc.)

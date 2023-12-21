@@ -5,7 +5,7 @@ from omegaconf import OmegaConf
 
 from utils import pylogger
 
-log = pylogger.RankedLogger(__name__, rank_zero_only=True)
+logger = pylogger.RankedLogger(__name__, rank_zero_only=True)
 
 
 @rank_zero_only
@@ -15,7 +15,8 @@ def log_hyperparameters(object_dict: Dict[str, Any]) -> None:
     Additionally saves:
         - Number of model parameters
 
-    :param object_dict: A dictionary containing the following objects:
+    Args:
+        object_dict (Dict[str, Any]): A dictionary containing the following objects:
         - `"config"`: A DictConfig object containing the main config.
         - `"model"`: The Lightning model.
         - `"trainer"`: The Lightning trainer.
@@ -27,7 +28,7 @@ def log_hyperparameters(object_dict: Dict[str, Any]) -> None:
     trainer = object_dict["trainer"]
 
     if not trainer.logger:
-        log.warning("Logger not found! Skipping hyperparameter logging...")
+        logger.warning("Logger not found! Skipping hyperparameter logging...")
         return
 
     hparams["model"] = config["model"]
@@ -53,5 +54,5 @@ def log_hyperparameters(object_dict: Dict[str, Any]) -> None:
     hparams["seed"] = config.get("seed")
 
     # send hparams to all loggers
-    for logger in trainer.loggers:
-        logger.log_hyperparams(hparams)
+    for lightning_logger in trainer.loggers:
+        lightning_logger.log_hyperparams(hparams)

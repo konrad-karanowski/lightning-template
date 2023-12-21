@@ -51,9 +51,9 @@ class MNISTLitModule(pl.LightningModule):
     ) -> None:
         """Initialize a `MNISTLitModule`.
 
-        :param model: The model to train.
-        :param optimizer: The optimizer to use for training.
-        :param scheduler: The learning rate scheduler to use for training.
+        Args:
+            compile (Optional[bool], optional). Whether to compile the model. Defaults to False.
+            *args, **kwargs: Hyperaparameters for the model. Saved by `self.save_hyperparameters()`
         """
         super().__init__()
 
@@ -91,23 +91,29 @@ class MNISTLitModule(pl.LightningModule):
             optimizer = hydra.utils.instantiate(
                 self.hparams.optimizer, params=params, _convert_="partial"
             )
+            # return only optimizer if lr_scheduler is not provided.
             if "lr_scheduler" not in self.hparams:
                 return {'optimizer': optimizer}
             scheduler = hydra.utils.instantiate(
                 self.hparams.lr_scheduler, optimizer=optimizer, _convert_="partial"
             )
+            # reduce LR on Plateau requires special treatment
             if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
                 return {
                     "optimizer": optimizer,
-                    "lr_scheduler": scheduler,
+                    "scheduler": scheduler,
                     "monitor": self.hparams.monitor.metric,
                 }
-            return {'optimizer': optimizer, 'scheduler': scheduler}
+            return {'optimizer': optimizer, 'lr_scheduler': scheduler}
+    
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Perform a forward pass through the model `self.model`.
+        """Performs a forward pass.
 
-        :param x: A tensor of images.
-        :return: A tensor of logits.
+        Args:
+            x (torch.Tensor): Input.
+
+        Returns:
+            torch.Tensor: Output
         """
         return self.model(x)
 
@@ -119,14 +125,17 @@ class MNISTLitModule(pl.LightningModule):
         self.val_acc.reset()
         self.val_acc_best.reset()
 
+
     def _shared_step(
         self, batch: Tuple[torch.Tensor, torch.Tensor]
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """Perform a single model step on a batch of data.
 
-        :param batch: A batch of data (a tuple) containing the input tensor of images and target labels.
+        Args:
+            batch (Tuple[torch.Tensor, torch.Tensor]): A batch of data (a tuple) containing the input tensor of images and target labels.
 
-        :return: A tuple containing (in order):
+        Returns:
+            Tuple[torch.Tensor, torch.Tensor, torch.Tensor]: A tuple containing (in order):
             - A tensor of losses.
             - A tensor of predictions.
             - A tensor of target labels.
@@ -137,15 +146,19 @@ class MNISTLitModule(pl.LightningModule):
         preds = torch.argmax(logits, dim=1)
         return loss, preds, y
 
+
     def training_step(
         self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int
     ) -> torch.Tensor:
         """Perform a single training step on a batch of data from the training set.
 
-        :param batch: A batch of data (a tuple) containing the input tensor of images and target
-            labels.
-        :param batch_idx: The index of the current batch.
-        :return: A tensor of losses between model predictions and targets.
+        Args:
+            batch (Tuple[torch.Tensor, torch.Tensor]): A batch of data (a tuple) containing the input tensor of images and target
+                labels.
+            batch_idx (int): The index of the current batch.
+
+        Returns:
+            torch.Tensor: A tensor of losses between model predictions and targets.
         """
         loss, preds, targets = self._shared_step(batch)
 
@@ -163,11 +176,12 @@ class MNISTLitModule(pl.LightningModule):
         pass
 
     def validation_step(self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> None:
-        """Perform a single validation step on a batch of data from the validation set.
+        """Perform a single validation step on a batch of data from the training set.
 
-        :param batch: A batch of data (a tuple) containing the input tensor of images and target
-            labels.
-        :param batch_idx: The index of the current batch.
+        Args:
+            batch (Tuple[torch.Tensor, torch.Tensor]): A batch of data (a tuple) containing the input tensor of images and target
+                labels.
+            batch_idx (int): The index of the current batch.
         """
         loss, preds, targets = self._shared_step(batch)
 
@@ -186,11 +200,12 @@ class MNISTLitModule(pl.LightningModule):
         self.log("val/acc_best", self.val_acc_best.compute(), sync_dist=True, prog_bar=True)
 
     def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> None:
-        """Perform a single test step on a batch of data from the test set.
+        """Perform a single test step on a batch of data from the training set.
 
-        :param batch: A batch of data (a tuple) containing the input tensor of images and target
-            labels.
-        :param batch_idx: The index of the current batch.
+        Args:
+            batch (Tuple[torch.Tensor, torch.Tensor]): A batch of data (a tuple) containing the input tensor of images and target
+                labels.
+            batch_idx (int): The index of the current batch.
         """
         loss, preds, targets = self._shared_step(batch)
 
@@ -211,11 +226,11 @@ class MNISTLitModule(pl.LightningModule):
         This is a good hook when you need to build models dynamically or adjust something about
         them. This hook is called on every process when using DDP.
 
-        :param stage: Either `"fit"`, `"validate"`, `"test"`, or `"predict"`.
+        Args:
+            stage (str): Either `"fit"`, `"validate"`, `"test"`, or `"predict"`.
         """
         if self.hparams.compile and stage == "fit":
             self.model = torch.compile(self.model)
-
 
 
 

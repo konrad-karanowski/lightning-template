@@ -1,6 +1,5 @@
 import logging
 from typing import Mapping, Optional
-
 from lightning_utilities.core.rank_zero import rank_prefixed_message, rank_zero_only
 
 
@@ -16,24 +15,30 @@ class RankedLogger(logging.LoggerAdapter):
         """Initializes a multi-GPU-friendly python command line logger that logs on all processes
         with their rank prefixed in the log message.
 
-        :param name: The name of the logger. Default is ``__name__``.
-        :param rank_zero_only: Whether to force all logs to only occur on the rank zero process. Default is `False`.
-        :param extra: (Optional) A dict-like object which provides contextual information. See `logging.LoggerAdapter`.
+        Args:
+            name (str, optional): The name of the logger. Defaults to __name__.
+            rank_zero_only (bool, optional): Whether to force all logs to only occur on the rank zero process. Defaults to False.
+            extra (Optional[Mapping[str, object]], optional): A dict-like object which provides contextual information. Defaults to None.
         """
         logger = logging.getLogger(name)
         super().__init__(logger=logger, extra=extra)
         self.rank_zero_only = rank_zero_only
+
 
     def log(self, level: int, msg: str, rank: Optional[int] = None, *args, **kwargs) -> None:
         """Delegate a log call to the underlying logger, after prefixing its message with the rank
         of the process it's being logged from. If `'rank'` is provided, then the log will only
         occur on that rank/process.
 
-        :param level: The level to log at. Look at `logging.__init__.py` for more information.
-        :param msg: The message to log.
-        :param rank: The rank to log at.
-        :param args: Additional args to pass to the underlying logging function.
-        :param kwargs: Any additional keyword args to pass to the underlying logging function.
+        Args:
+            level (int): The level to log at. Look at `logging.__init__.py` for more information.
+            msg (str): The message to log.
+            rank (Optional[int], optional): The rank to log at. Defaults to None.
+            *args: Additional args to pass to the underlying logging function.
+            **kwargs: Any additional keyword args to pass to the underlying logging function.
+
+        Raises:
+            RuntimeError: If `rank_zero_only.rank` is not set.
         """
         if self.isEnabledFor(level):
             msg, kwargs = self.process(msg, kwargs)

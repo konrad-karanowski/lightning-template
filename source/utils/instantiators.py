@@ -13,8 +13,14 @@ logger = pylogger.RankedLogger(__name__, rank_zero_only=True)
 def instantiate_callbacks(callbacks_config: DictConfig) -> List[Callback]:
     """Instantiates callbacks from config.
 
-    :param callbacks_config: A DictConfig object containing callback configurations.
-    :return: A list of instantiated callbacks.
+    Args:
+        callbacks_config (DictConfig): A DictConfig object containing callback configurations.
+
+    Raises:
+        TypeError: If callbacks_config is not a DictConfig object.
+
+    Returns:
+        List[Callback]: List of instantiated callbacks.
     """
     callbacks: List[Callback] = []
 
@@ -36,8 +42,14 @@ def instantiate_callbacks(callbacks_config: DictConfig) -> List[Callback]:
 def instantiate_loggers(logger_config: DictConfig) -> List[Logger]:
     """Instantiates loggers from config.
 
-    :param logger_config: A DictConfig object containing logger configurations.
-    :return: A list of instantiated loggers.
+    Args:
+        logger_config (DictConfig): A DictConfig object containing logger configurations.
+
+    Raises:
+        TypeError: If logger_config is not a DictConfig object.
+
+    Returns:
+        List[Logger]: A list of instantiated loggers.
     """
     loggers: List[Logger] = []
 
@@ -48,9 +60,9 @@ def instantiate_loggers(logger_config: DictConfig) -> List[Logger]:
     if not isinstance(logger_config, DictConfig):
         raise TypeError("Logger config must be a DictConfig!")
 
-    for _, logg in logger_config.items():
-        if isinstance(logg, DictConfig) and "_target_" in logg:
-            logger.info(f"Instantiating logger <{logg._target_}>")
-            loggers.append(hydra.utils.instantiate(logg))
+    for _, lightning_logger in logger_config.items():
+        if isinstance(lightning_logger, DictConfig) and "_target_" in lightning_logger:
+            logger.info(f"Instantiating logger <{lightning_logger._target_}>")
+            loggers.append(hydra.utils.instantiate(lightning_logger))
 
     return loggers
